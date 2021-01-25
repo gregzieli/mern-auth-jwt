@@ -1,0 +1,13 @@
+.modal {
+  align-items: center;
+}
+
+.social {
+  text-align: center;
+}
+
+.social a {
+  color: inherit;
+  padding: 1rem;
+  font-size: 36px;
+}
