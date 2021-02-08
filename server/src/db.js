@@ -1,17 +1,21 @@
 import mongoose from "mongoose";
 
 async function config() {
-  const db = mongoose.connection;
+    mongoose.connection.once("open", () => console.log("db connected"));
+    mongoose.connection.on("error", (err) => {
+        console.error("Database connection error", err);
+    });
 
-  db.on("error", console.error.bind(console, "connection error:"));
-  db.once("open", () => console.log("db connected"));
-
-  return mongoose.connect(process.env.DATABASE, {
-    useUnifiedTopology: true,
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-  });
+    try {
+        await mongoose.connect(process.env.DATABASE, {
+            useUnifiedTopology: true,
+            useNewUrlParser: true,
+            useCreateIndex: true,
+            useFindAndModify: false,
+        });
+    } catch (error) {
+        console.error("Database initialization error", error);
+    }
 }
 
 export default { config };
