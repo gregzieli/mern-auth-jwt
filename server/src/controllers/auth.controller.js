@@ -31,7 +31,6 @@ export async function register(req, res) {
         setTokenCookie(res, refreshToken.token);
 
         return res.status(201).json({
-            // TODO: return user's object or id token maybe?
             ...basicDetails(user),
             accessToken,
         });
@@ -63,7 +62,6 @@ export async function authenticate(req, res) {
         setTokenCookie(res, refreshToken.token);
 
         return res.status(201).json({
-            // TODO: return user's object or id token maybe?
             ...basicDetails(user),
             accessToken,
         });
@@ -101,9 +99,7 @@ export async function refreshToken(req, res) {
 
         setTokenCookie(res, newRefreshToken.token);
 
-        // return only access token or whole user?
         return res.status(201).json({
-            ...basicDetails(user),
             accessToken,
         });
     } catch (error) {

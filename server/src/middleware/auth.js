@@ -1,16 +1,21 @@
 import jwt from "jsonwebtoken";
 
 export function authorize(req, res, next) {
-    // TODO: more universal is bearer:... ?
-    const token = req.get("x-auth-token");
-
-    if (!token) {
-        return res.status(401).json({ error: "Missing token" });
-    }
-
     try {
+        const header = req.get("Authorization");
+
+        if (!header) {
+            return res.status(401).json({ error: "Missing authorization header" });
+        }
+
+        const [schema, token] = header.split(" ");
+
+        if (!/^Bearer$/i.test(schema) || !token) {
+            return res.status(401).json({ error: "Incorrect authorization format" });
+        }
+
         const payload = jwt.verify(token, process.env.SECRET);
-        req.user = payload.user;
+        req.user = { id: payload.sub };
         next();
     } catch (error) {
         if (error.name === "TokenExpiredError") {

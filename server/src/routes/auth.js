@@ -13,8 +13,8 @@ router.post("/register", register);
 
 router.post("/authenticate", authenticate);
 
-router.post("/refresh-token", refreshToken);
+router.post("/refresh", refreshToken);
 
-router.put("/revokeToken", revokeToken);
+router.put("/revoke", revokeToken);
 
 export default router;

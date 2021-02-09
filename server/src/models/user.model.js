@@ -28,6 +28,12 @@ userSchema.pre("save", async function (next) {
     return next();
 });
 
-export default mongoose.model("User", userSchema);
+userSchema.set("toJSON", {
+    versionKey: false,
+    transform: function (doc, ret) {
+        delete ret._id;
+        delete ret.password;
+    },
+});
 
-//TODO: toJSON?
+export default mongoose.model("User", userSchema);

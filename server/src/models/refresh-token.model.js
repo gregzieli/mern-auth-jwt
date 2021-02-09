@@ -1,26 +1,31 @@
 import mongoose from "mongoose";
 
-const schema = new mongoose.Schema({
+const tokenSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    token: String,
-    expires: Date,
+    token: { type: String },
+    expires: { type: Date },
     created: { type: Date, default: Date.now },
-    revoked: Date,
-    replacedByToken: String,
+    revoked: { type: Date },
+    replacedByToken: { type: String },
 });
 
-schema.virtual("isExpired").get(() => Date.now() >= this.expires);
+tokenSchema.virtual("isExpired").get(function () {
+    return Date.now() >= this.expires;
+});
 
-schema.virtual("isActive").get(() => !this.revoked && !this.isExpired);
+tokenSchema.virtual("isActive").get(function () {
+    return !this.revoked && !this.isExpired;
+});
 
-schema.set("toJSON", {
+tokenSchema.set("toJSON", {
     virtuals: true,
     versionKey: false,
     transform: function (doc, ret) {
         delete ret._id;
+        // this is virtual id
         delete ret.id;
         delete ret.user;
     },
 });
 
-export default mongoose.model("RefreshToken", schema);
+export default mongoose.model("RefreshToken", tokenSchema);
