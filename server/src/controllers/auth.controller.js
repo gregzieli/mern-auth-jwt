@@ -8,18 +8,18 @@ export async function register(req, res) {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-        return res.status(400).json({ msg: "All fields required" });
+        return res.status(400).json({ message: "All fields required" });
     }
 
     if (password.length < 8) {
-        return res.status(400).json({ msg: "Password too short" });
+        return res.status(400).json({ message: "Password too short" });
     }
 
     try {
         const hasUser = await User.findOne({ email });
 
         if (hasUser) {
-            return res.status(401).json({ msg: "User already exists" });
+            return res.status(401).json({ message: "User already exists" });
         }
 
         const user = await User.create(req.body);
@@ -36,22 +36,23 @@ export async function register(req, res) {
         });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ message: "Internal Server Error" });
     }
 }
 
 export async function authenticate(req, res) {
+    console.log(req.body);
     const { email, password } = req.body;
 
     if (!email || !password) {
-        return res.status(400).json({ msg: "All fields required" });
+        return res.status(400).json({ message: "All fields required" });
     }
 
     try {
         const user = await User.findOne({ email });
 
         if (!user || !(await bcrypt.compare(password, user.password))) {
-            return res.status(401).json({ error: "Invalid credentials" });
+            return res.status(401).json({ message: "Invalid credentials" });
         }
 
         const accessToken = authService.generateAccessToken(user);
@@ -67,7 +68,7 @@ export async function authenticate(req, res) {
         });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ message: "Internal Server Error" });
     }
 }
 
@@ -76,14 +77,14 @@ export async function refreshToken(req, res) {
         const token = req.cookies.refreshToken;
 
         if (!token) {
-            return res.status(403).json({ error: "Access denied" });
+            return res.status(403).json({ message: "Access denied" });
         }
 
         // Refreshing the access token, changing the refreshToken is just extra security
         const dbToken = await RefreshToken.findOne({ token }).populate("user");
 
         if (!dbToken || !dbToken.isActive) {
-            return res.status(401).json({ error: "Invalid token" });
+            return res.status(401).json({ message: "Invalid token" });
         }
 
         const { user } = dbToken;
@@ -104,7 +105,7 @@ export async function refreshToken(req, res) {
         });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ message: "Internal Server Error" });
     }
 }
 
@@ -115,16 +116,16 @@ export async function revokeToken(req, res) {
         const refreshToken = await RefreshToken.findOne({ token });
 
         if (!refreshToken || !refreshToken.isActive) {
-            return res.status(401).json({ error: "Invalid token" });
+            return res.status(401).json({ message: "Invalid token" });
         }
 
         refreshToken.revoked = Date.now();
         await refreshToken.save();
 
-        return res.status(200).json({ success: "Token revoked" });
+        return res.status(200).json({ message: "Token revoked" });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ message: "Internal Server Error" });
     }
 }
 
@@ -138,6 +139,6 @@ function setTokenCookie(res, token) {
 }
 
 function basicDetails(user) {
-    const { id, name, email } = user;
-    return { id, name, email };
+    const { name, email } = user;
+    return { name, email };
 }
