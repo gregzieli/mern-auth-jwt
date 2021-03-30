@@ -43,6 +43,7 @@ const Login = ({ handleClose, changeModal }) => {
                     <Social />
                     <Form.Group controlId="formBasicEmail">
                         <Form.Control
+                            required
                             type="email"
                             placeholder="Email"
                             onChange={(e) => setEmail(e.target.value)}
@@ -51,6 +52,7 @@ const Login = ({ handleClose, changeModal }) => {
 
                     <Form.Group controlId="formBasicPassword">
                         <Form.Control
+                            required
                             type="password"
                             placeholder="Password"
                             onChange={(e) => setPassword(e.target.value)}
